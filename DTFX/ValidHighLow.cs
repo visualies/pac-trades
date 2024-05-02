@@ -311,7 +311,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{ get; set; }
 		
 		[XmlIgnore()]
-		[Display(Name = "Print Candle Indices", GroupName = "Debug Options", Order = 10)]
+		[Display(Name = "Print Candle Indices", GroupName = "Debug Options", Order = 2)]
 		public bool PrintCandleIndices
 		{ get; set; }
 		
