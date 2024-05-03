@@ -66,6 +66,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 				ValidLowColor = Brushes.Red;
 				MarkSwingPeaks = false;
 				PrintCandleIndices = false;
+				ShowSwings = true;
+				ShowFractals = true;
+				
 				AddPlot(new Stroke(Brushes.Blue), PlotStyle.Line, "MyPlot2");
 			}
 			else if (State == State.Configure)
@@ -128,7 +131,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			Print($"Candle @{barIndex} is a bullish candle.");
 
 			//Here we check for the high to be closed above but then register the wick high as new highest high
-			if (currentHighClose < highestHigh)return;
+			if (currentHighClose <= highestHigh) return;
 			Print($"Candle @{barIndex} put in a new high of {currentHigh} above previous highs of {highestHigh}.");
 			
 			highestHigh = currentHigh;
@@ -146,7 +149,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			Print($"Candle @{barIndex} is a bearish candle.");
 			
 			//Same as above but for bearish candles
-			if (currentLowClose > lowestLow) return;
+			if (currentLowClose >= lowestLow) return;
 			Print($"Candle @{barIndex} put in a new low of {currentLow} below previous lows of {lowestLow}.");
 			
 			lowestLow = currentLow;
@@ -184,8 +187,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 			swingHighs.Add(validIndex);
 			
-			Draw.TriangleDown(this, "valid high" + barIndex, true, CurrentBar - validIndex, High.GetValueAt(validIndex) + 0.3, ValidHighColor);
-			Draw.Line(this, "swing-high" + barIndex, CurrentBar - validIndex, High.GetValueAt(validIndex), CurrentBar - swingLows.LastOrDefault(), Low.GetValueAt(swingLows.LastOrDefault()), Brushes.DimGray);
+			if (ShowFractals) Draw.TriangleDown(this, "valid high" + barIndex, true, CurrentBar - validIndex, High.GetValueAt(validIndex) + 0.3, ValidHighColor);
+			if (ShowSwings) Draw.Line(this, "swing-high" + barIndex, CurrentBar - validIndex, High.GetValueAt(validIndex), CurrentBar - swingLows.LastOrDefault(), Low.GetValueAt(swingLows.LastOrDefault()), Brushes.DimGray);
 		}
 		
 		private void ValidateLows(int barIndex)
@@ -218,8 +221,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 			
 			swingLows.Add(validIndex);
 			
-			Draw.TriangleUp(this, "valid low" + barIndex, true, CurrentBar - validIndex, Low.GetValueAt(validIndex) - 0.3, ValidLowColor);
-			Draw.Line(this, "swing-low" + barIndex, CurrentBar - validIndex, Low.GetValueAt(validIndex), CurrentBar - swingHighs.LastOrDefault(), High.GetValueAt(swingHighs.LastOrDefault()), Brushes.DimGray);
+			if (ShowFractals) Draw.TriangleUp(this, "valid low" + barIndex, true, CurrentBar - validIndex, Low.GetValueAt(validIndex) - 0.3, ValidLowColor);
+			if (ShowSwings) Draw.Line(this, "swing-low" + barIndex, CurrentBar - validIndex, Low.GetValueAt(validIndex), CurrentBar - swingHighs.LastOrDefault(), High.GetValueAt(swingHighs.LastOrDefault()), Brushes.DimGray);
 		}
 
 		private int LowestBarFromRange(int startIndex, int endIndex)
@@ -316,13 +319,23 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{ get; set; }
 		
 		[XmlIgnore()]
-		[Display(Name = "Valid Highs", GroupName = "Colors", Order = 1)]
+		[Display(Name = "Valid Highs", GroupName = "Display", Order = 1)]
 		public Brush ValidHighColor
 		{ get; set; }
 		
 		[XmlIgnore()]
-		[Display(Name = "Valid Lows", GroupName = "Colors", Order = 2)]
+		[Display(Name = "Valid Lows", GroupName = "Display", Order = 2)]
 		public Brush ValidLowColor
+		{ get; set; }
+		
+		[XmlIgnore()]
+		[Display(Name = "Show Swings", GroupName = "Display", Order = 3)]
+		public bool ShowSwings
+		{ get; set; }
+		
+		[XmlIgnore()]
+		[Display(Name = "Show Fractals", GroupName = "Display", Order = 4)]
+		public bool ShowFractals
 		{ get; set; }
 		
 		[Browsable(false)]
